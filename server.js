@@ -4,7 +4,7 @@ const AccountRouter = require('./accounts/accountRouter.js');
 
 const server = express();
 
-server.use('/api/accounts', AccountRouter, logger);
+server.use('/api/accounts', express.json(), AccountRouter, logger);
 
 server.get('/', (req, res) => {
     res.send('ZEE SERVER ES OPERATIONALZ')

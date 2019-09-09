@@ -28,18 +28,17 @@ router.get('/:id', (req, res) => {
     })
 });
 
-router.post('/', validateAccount, (req, res) => {
+router.post('/', (req, res) => {
     const accountData = req.body;
-    db('accounts').insert(accountData, 'id')
-    .then(([id]) => {
-        db('accounts')
-            .where({ id }) 
-            .first() 
-            .then(accounts => {
-                res.status(200).json(accounts)
-        });
+    db('accounts')
+    .insert(accountData, "id")
+        .then(account => {
+            res.status(201).json(account)
+        })
+        .catch(err => {
+            res.json(err);
+        })
     });
-});
 
 router.put('/:id', validateAccount, validateId, (req, res) => {
     const changes = req.body;
