@@ -22,8 +22,8 @@ LIMIT 10;
 SELECT Country, City 
 FROM Customers
 WHERE country = 'Brazil'
-   OR city = 'London'
-   OR city = 'Madrid';
+OR city IN = 'London', 'Madrid';
+   
 
 ## Add a customer record for "The Shire", the contact name is "Bilbo Baggins" the address is -"1 Hobbit-Hole" in "Bag End", postal code "111" and the country is "Middle Earth"
 

@@ -18,8 +18,8 @@ router.get('/', (req, res) => {
 router.get('/:id', (req, res) => {
     const { id } = req.params;
     db('accounts')
-    .where({ id }) //always returns an array
-    .first() // picks the first element of the resulting array
+    .where({ id }) 
+    .first() 
     .then(accounts => {
         res.status(200).json(accounts)
     })
@@ -28,29 +28,29 @@ router.get('/:id', (req, res) => {
     })
 });
 
-router.post('/', (req, res) => {
-    // insert into accounts()
+router.post('/', validateAccount, (req, res) => {
     const accountData = req.body;
-    //validate the accountData before inserting into db
-
     db('accounts').insert(accountData, 'id')
     .then(([id]) => {
         db('accounts')
-            .where({ id }) //always returns an array
-            .first() // picks the first element of the resulting array
+            .where({ id }) 
+            .first() 
             .then(accounts => {
                 res.status(200).json(accounts)
         });
     });
 });
 
-router.put('/:id', (req, res) => {
+router.put('/:id', validateAccount, validateId, (req, res) => {
     const changes = req.body;
     db('accounts')
         .where('id, req.params.id')
         .update(changes)
         .then(count => {
-            res.status(200).json({message: `updated ${count} records`})
+            if(count > 0)
+            res.status(200).json({message: `updated ${count} account`})
+            else
+            res.status(500).json({message: "Error updating account"})
     });
 });
 
@@ -58,8 +58,32 @@ router.delete('/:id', (req, res) => {
     db('accounts').where({id: req.params.id })
     .del()
     .then(count => {
-        res.status(200).json({message: `deleted ${count} records`})
+        res.status(200).json({message: `deleted ${count} account`})
     })
 });
+
+//MW
+
+function validateAccount(req, res, next) {
+    if (req.body) {
+        next();
+    } else {
+        res.status(400).json({ error: "Must provide one of or both Name, Budget of Account"})
+    }
+}
+
+function validateId(req, res, next) {
+    const { id } = req.params;
+    if (id) {
+        if (req.body.id) {
+            next();
+        } else {
+            req.body.id = Number(id);
+            next();
+        }
+    } else {
+        res.status(404).json({ error: "no account with this ID exists" })
+    }
+}
 
 module.exports = router;
